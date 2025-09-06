@@ -1,39 +1,39 @@
-'use client';
-import { useEffect } from "react";
+'use client'
+
+import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
+import { GameInput } from "./components/game-input";
+import { GameLoader } from "./components/game-loader";
+import { GameMessage } from "./components/game-message";
+import { useZombieGame } from "./hooks/use-zombie-game";
 
 export default function Home() {
-
-  useEffect(() => {
-    fetch('/api/generate-story', {
-      method: 'POST',
-      body: JSON.stringify({
-        userMessage: 'I want to go to the store',
-        conversationHistory: [],
-        isStart: true
-      })
-    }).then(res => res.json())
-      .then(data => {
-        fetch('/api/generate-image',{
-          method: 'POST',
-          body: JSON.stringify({
-            imagePrompt: data.imagePrompt
-          })
-        }).then(res => res.json())
-          .then(imageData => {
-            console.log(imageData);
-          })
-          .catch(error => {
-            console.error('Error generating image:', error);
-          })
-      })
-      .catch(error => {
-        console.error('Error generating story:', error);
-      })
-  }, []);
+  const { messages, input, isLoading, startGame, handleSubmit, handleInputChange } = useZombieGame()
 
   return (
-    <div className="font-sans min-h-screen p-8">
-      zombie apocalypse game
+    <div className="font-sans h-screen mx-auto overflow-hidden ">
+      
+      <div className="flex flex-col h-full">
+        <Conversation>
+          <ConversationContent className="max-w-xl mx-auto">
+            {
+              messages.map(message => (
+                <GameMessage key={message.id} message={message} />
+              ))
+            }
+            {isLoading && <GameLoader />}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+
+        <div className="max-w-2xl w-full mx-auto pb-4">
+          <GameInput
+            input={input}
+            onInputChange={handleInputChange}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
     </div>
   );
 }
