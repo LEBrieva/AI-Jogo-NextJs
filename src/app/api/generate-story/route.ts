@@ -17,7 +17,7 @@ export async function POST(request: NextRequest){
             prompt = GAME_PROMPTS.CONTINUE_STORY(historyText, userMessage);
         }
         const {text} = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-2.5-flash-lite'),
             prompt
         });
 
